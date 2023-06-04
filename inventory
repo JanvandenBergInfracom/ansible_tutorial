@@ -11,4 +11,6 @@
 [file_servers]
 192.168.5.42
 
+[workstations]
+192.168.5.40
 
