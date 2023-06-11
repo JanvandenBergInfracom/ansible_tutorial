@@ -11,12 +11,14 @@
       update_cache: yes
     when: ansible_distribution in ["Ubuntu", "Debian"]
 
-  - name: install updates (AlmaLinux)
+  - name: install updates (AlmaLinux and Fedora)
     tags: always
     dnf:
+      name: "*"
+      state: latest
       update_only: yes
       update_cache: yes
-    when: ansible_distribution == "AlmaLinux"
+    when: ansible_distribution in ["AlmaLinux", "Fedora"]
 
 - hosts: workstations
   become: true
@@ -57,6 +59,30 @@
         - php
       state: latest
     when: ansible_distribution == "AlmaLinux"
+
+  - name: start httpd (AlmaLinux)
+    tags: apache,almalinux.https
+    service: 
+      name: httpd
+      state: started
+      enabled: yes
+    when: ansible_distribution == "AlmaLinux"
+
+  - name: change e-mail address for admin
+    tags: apache,almalinux,httpd
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin berg@infracom.nl
+    when: ansible_distribution == "AlmaLinux"
+    register: httpd
+
+  - name: restart httpd (AlmaLinux)
+    tags: apache,almalinux,httpd
+    service: 
+      name: httpd
+      state: restarted
+    when: httpd.changed
 
   - name: copy default html file for site
     tags: apache,apache2,httpd
