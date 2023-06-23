@@ -4,3 +4,13 @@
     user: simone
     key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILJRcgONwh6rjNvcLTzHvR1FYAsU/yvjJx7q3zjoEnNZ ansible"
 
+- name: generated sshd_config file from template
+  tags: ssd
+  template:
+    src: "{{ ssh_template_file }}"
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_sshd
+
